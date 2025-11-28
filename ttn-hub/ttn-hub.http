@@ -1,0 +1,6 @@
+@ttn_hub_HostAddress = http://localhost:5168
+
+GET {{ttn_hub_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
