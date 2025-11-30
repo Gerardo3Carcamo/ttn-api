@@ -16,7 +16,7 @@ COPY ["ttn-hub/ttn-hub.api.csproj", "ttn-hub.api/"]
 RUN dotnet restore "./ttn-hub/ttn-hub.csproj"
 COPY . .
 WORKDIR "/src/ttn-hub"
-RUN dotnet build "./ttn-hub.pi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./ttn-hub.api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Esta fase se usa para publicar el proyecto de servicio que se copiará en la fase final.
 FROM build AS publish
