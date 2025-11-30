@@ -1,21 +1,31 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
+# Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+USER app
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8080
+EXPOSE 8081
 
+# Build
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ttn-hub/ttn-hub.csproj", "./"]
-RUN dotnet restore "ttn-hub/ttn-hub.csproj"
+
+# 👉 Copiamos SOLO el csproj (está en la misma carpeta que este Dockerfile)
+COPY ["ttn-hub.csproj", "./"]
+RUN dotnet restore "./ttn-hub.csproj"
+
+# 👉 Copiamos todo el código
 COPY . .
-WORKDIR "/src/ttn-hub"
-RUN dotnet build "ttn-hub.csproj" -c Release -o /app/build
 
+# Ya estamos en /src, donde está el csproj
+RUN dotnet build "./ttn-hub.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Publish
 FROM build AS publish
-RUN dotnet publish "ttn-hub.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./ttn-hub.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
+# Final
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
