@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["ttn-hub/ttn-hub.api.csproj", "ttn-hub/"]
+COPY ["ttn-hub/ttn-hub.api.csproj", "./"]
 RUN dotnet restore "ttn-hub/ttn-hub.api.csproj"
 COPY . .
 WORKDIR "/src/ttn-hub"
