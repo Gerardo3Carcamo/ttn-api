@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  ttn-hub.api:
+    image: ${DOCKER_REGISTRY-}ttnhub
+    build:
+      context: .
+      dockerfile: ttn-hub/Dockerfile

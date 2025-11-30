@@ -1,30 +1,22 @@
-# Consulte https://aka.ms/customizecontainer para aprender a personalizar su contenedor de depuración y cómo Visual Studio usa este Dockerfile para compilar sus imágenes para una depuración más rápida.
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-# Esta fase se usa cuando se ejecuta desde VS en modo rápido (valor predeterminado para la configuración de depuración)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 80
+EXPOSE 443
 
-
-# Esta fase se usa para compilar el proyecto de servicio
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["ttn-hub/ttn-hub.api.csproj", "ttn-hub.api/"]
-RUN dotnet restore "./ttn-hub/ttn-hub.csproj"
+COPY ["ttn-hub/ttn-hub.api.csproj", "ttn-hub/"]
+RUN dotnet restore "ttn-hub/ttn-hub.api.csproj"
 COPY . .
 WORKDIR "/src/ttn-hub"
-RUN dotnet build "./ttn-hub.api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "ttn-hub.api.csproj" -c Release -o /app/build
 
-# Esta fase se usa para publicar el proyecto de servicio que se copiará en la fase final.
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ttn-hub.api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "ttn-hub.api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Esta fase se usa en producción o cuando se ejecuta desde VS en modo normal (valor predeterminado cuando no se usa la configuración de depuración)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ttn-hub.dll"]
+ENTRYPOINT ["dotnet", "ttn-hub.api.dll"]
