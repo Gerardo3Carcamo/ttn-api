@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["ttn-hub/ttn-hub.api.csproj", "./"]
-RUN dotnet restore "ttn-hub/ttn-hub.api.csproj"
+COPY ["ttn-hub/ttn-hub.csproj", "./"]
+RUN dotnet restore "ttn-hub/ttn-hub.csproj"
 COPY . .
 WORKDIR "/src/ttn-hub"
-RUN dotnet build "ttn-hub.api.csproj" -c Release -o /app/build
+RUN dotnet build "ttn-hub.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "ttn-hub.api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "ttn-hub.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ttn-hub.api.dll"]
+ENTRYPOINT ["dotnet", "ttn-hub.dll"]
