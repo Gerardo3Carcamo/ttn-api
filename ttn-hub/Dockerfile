@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ttn-hub/ttn-hub.csproj", "ttn-hub.api/"]
+COPY ["ttn-hub/ttn-hub.api.csproj", "ttn-hub.api/"]
 RUN dotnet restore "./ttn-hub/ttn-hub.csproj"
 COPY . .
 WORKDIR "/src/ttn-hub"
