@@ -11,7 +11,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # 👉 Copiamos SOLO el csproj (está en la misma carpeta que este Dockerfile)
-COPY ["ttn-hub.csproj", "./"]
+COPY ["ttn-hub.csproj", "ttn-hub/"]
 RUN dotnet restore "./ttn-hub.csproj"
 
 # 👉 Copiamos todo el código
